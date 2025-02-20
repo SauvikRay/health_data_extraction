@@ -23,9 +23,9 @@ class DefaultFirebaseOptions {
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return android;
+        return _android;
       case TargetPlatform.iOS:
-        return ios;
+        return _ios;
       case TargetPlatform.macOS:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for macos - '
@@ -48,7 +48,7 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions android = FirebaseOptions(
+  static const FirebaseOptions _android = FirebaseOptions(
     apiKey: 'AIzaSyC1rKu9ufl5gLXqWksZ-lkhCM3NsNgQjmM',
     appId: '1:883165791671:android:6dd739ab9f6de64547d432',
     messagingSenderId: '883165791671',
@@ -56,7 +56,7 @@ class DefaultFirebaseOptions {
     storageBucket: 'kambaiiwellnessapp.firebasestorage.app',
   );
 
-  static const FirebaseOptions ios = FirebaseOptions(
+  static const FirebaseOptions _ios = FirebaseOptions(
     apiKey: 'AIzaSyCzzPjtoh7sOCtpA5wBCMZtkO4ahgrYlt4',
     appId: '1:883165791671:ios:4766f4c9d3e1e1c647d432',
     messagingSenderId: '883165791671',
