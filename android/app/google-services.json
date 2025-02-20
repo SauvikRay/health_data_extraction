@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "883165791671",
+    "project_id": "kambaiiwellnessapp",
+    "storage_bucket": "kambaiiwellnessapp.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:883165791671:android:6dd739ab9f6de64547d432",
+        "android_client_info": {
+          "package_name": "com.kambaii.kambaiihealth"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "883165791671-2uolreltu0cpd11j43qud3iq8anjo1bq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kambaii.kambaiihealth",
+            "certificate_hash": "77d83f1616b68670068b0146e431527a6f3d020c"
+          }
+        },
+        {
+          "client_id": "883165791671-t38pm0e5pq988ecjhvqh0lu2khr872k4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kambaii.kambaiihealth",
+            "certificate_hash": "68a65bc80b51eb416539b70f8e6a99225e831469"
+          }
+        },
+        {
+          "client_id": "883165791671-eele67q4lujiuhpcha48hlrl1tsigba4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1rKu9ufl5gLXqWksZ-lkhCM3NsNgQjmM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "883165791671-eele67q4lujiuhpcha48hlrl1tsigba4.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -2,13 +2,19 @@
 // import 'dart:io';
 
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test_health_data/back_service.dart';
+import 'package:test_health_data/firebase_options.dart';
 import 'package:test_health_data/global_keys.dart';
+import 'package:test_health_data/notification_service.dart';
 
 import 'health_service/health_data_service.dart';
 
@@ -23,6 +29,12 @@ Future<void> main() async {
   await requestPermission(Permission.notification);
   await requestPermission(Permission.location);
   await requestPermission(Permission.locationAlways);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseMessaging.onBackgroundMessage(backgroundHandler);
+
+  LocalNotificationService.initialize();
   await HealthDataService.initialization();
   await initializeService();
   runApp(const MyApp());
@@ -37,6 +49,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String text = "Stop Service";
+  String systolic = '';
+  String diastolic = '';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -45,52 +59,76 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Service App'),
         ),
-        body: Column(
-          children: [
-            StreamBuilder<Map<String, dynamic>?>(
-              stream: FlutterBackgroundService().on('update'),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
+        body: Center(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              StreamBuilder<Map<String, dynamic>?>(
+                stream: FlutterBackgroundService().on('update'),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  }
+
+                  final data = snapshot.data!;
+                  String? device = data["device"];
+                  DateTime? date = DateTime.tryParse(data["current_date"]);
+                  return Column(
+                    children: [
+                      Text(device ?? 'Unknown'),
+                      Text(date.toString()),
+                    ],
                   );
-                }
+                },
+              ),
+              ElevatedButton(
+                child: const Text("Foreground Mode"),
+                onPressed: () => FlutterBackgroundService().invoke("setAsForeground"),
+              ),
+              ElevatedButton(
+                child: const Text("Background Mode"),
+                onPressed: () => FlutterBackgroundService().invoke("setAsBackground"),
+              ),
+              ElevatedButton(
+                child: Text(text),
+                onPressed: () async {
+                  final service = FlutterBackgroundService();
+                  var isRunning = await service.isRunning();
+                  isRunning ? service.invoke("stopService") : service.startService();
 
-                final data = snapshot.data!;
-                String? device = data["device"];
-                DateTime? date = DateTime.tryParse(data["current_date"]);
-                return Column(
+                  setState(() {
+                    text = isRunning ? 'Start Service' : 'Stop Service';
+                  });
+                },
+              ),
+              ElevatedButton(
+                  child: const Text("Check Blod Pressure"),
+                  onPressed: () async {
+                    await HealthDataService.fetchBloodPressureData().then(
+                      (List<HealthDataPoint> healthData) {
+                        for (var item in healthData) {
+                          if (item.type == HealthDataType.BLOOD_PRESSURE_SYSTOLIC) {
+                            systolic = (item.value as NumericHealthValue).numericValue.toString();
+                          }
+                          if (item.type == HealthDataType.BLOOD_PRESSURE_DIASTOLIC) {
+                            diastolic = (item.value as NumericHealthValue).numericValue.toString();
+                          }
+                        }
+                        setState(() {});
+                      },
+                    );
+                  }),
+              Expanded(
+                child: Column(
                   children: [
-                    Text(device ?? 'Unknown'),
-                    Text(date.toString()),
+                    Text('Blood Pressure Systolic : $systolic, Diastolic :$diastolic '),
                   ],
-                );
-              },
-            ),
-            ElevatedButton(
-              child: const Text("Foreground Mode"),
-              onPressed: () => FlutterBackgroundService().invoke("setAsForeground"),
-            ),
-            ElevatedButton(
-              child: const Text("Background Mode"),
-              onPressed: () => FlutterBackgroundService().invoke("setAsBackground"),
-            ),
-            ElevatedButton(
-              child: Text(text),
-              onPressed: () async {
-                final service = FlutterBackgroundService();
-                var isRunning = await service.isRunning();
-                isRunning ? service.invoke("stopService") : service.startService();
-
-                setState(() {
-                  text = isRunning ? 'Start Service' : 'Stop Service';
-                });
-              },
-            ),
-            const Expanded(
-              child: LogView(),
-            ),
-          ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -115,6 +153,7 @@ class _LogViewState extends State<LogView> {
       final SharedPreferences sp = await SharedPreferences.getInstance();
       await sp.reload();
       logs = sp.getStringList('log') ?? [];
+      log("logdd $logs");
       if (mounted) {
         setState(() {});
       }
@@ -132,8 +171,12 @@ class _LogViewState extends State<LogView> {
     return ListView.builder(
       itemCount: logs.length,
       itemBuilder: (context, index) {
-        final log = logs.elementAt(index);
-        return Text(log);
+        final logdd = logs.elementAt(index);
+
+        return Text(
+          logdd,
+          style: TextStyle(color: Colors.black),
+        );
       },
     );
   }

@@ -123,12 +123,12 @@ class HealthDataService {
   }
 
 //Check Bllod Pressure
-  /// Fetch steps from the health plugin and show them in the app.
+
   static Future<List<HealthDataPoint>> fetchBloodPressureData() async {
     List<HealthDataPoint> healthData = [];
-    // get steps for today (i.e., since midnight)
+
     final now = DateTime.now();
-    DateTime start = now.subtract(Duration(hours: 1));
+    DateTime start = now.subtract(Duration(days: 1));
     final List<HealthDataType> types = [
       HealthDataType.BLOOD_PRESSURE_SYSTOLIC,
       HealthDataType.BLOOD_PRESSURE_DIASTOLIC,
@@ -166,7 +166,7 @@ class HealthDataService {
     List<HealthDataPoint> healthData = [];
     // get steps for today (i.e., since midnight)
     final now = DateTime.now();
-    DateTime start = now.subtract(Duration(days: 7));
+    DateTime start = now.subtract(Duration(days: 1));
     final List<HealthDataType> types = [
       HealthDataType.WEIGHT,
       HealthDataType.HEIGHT,
@@ -200,7 +200,7 @@ class HealthDataService {
     List<HealthDataPoint> healthData = [];
     // get steps for today (i.e., since midnight)
     final now = DateTime.now();
-    DateTime start = now.subtract(Duration(hours: 1));
+    DateTime start = now.subtract(Duration(days: 1));
     final List<HealthDataType> types = [
       HealthDataType.BLOOD_GLUCOSE,
       HealthDataType.HEART_RATE,
