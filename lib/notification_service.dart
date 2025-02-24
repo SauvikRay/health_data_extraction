@@ -84,6 +84,13 @@ getGlucoseHeartRateTemperatureData() async {
   );
 }
 
+const AndroidNotificationChannel channel = AndroidNotificationChannel(
+  'high_important_push_channel', // id
+  'High Importance Notifications', // title
+  description: 'This channel is used for important notifications.', // description,
+  importance: Importance.max,
+);
+
 class LocalNotificationService {
   LocalNotificationService._();
   static final _notificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -141,20 +148,19 @@ class LocalNotificationService {
   static Future<void> createAndDisplayNotification(RemoteMessage message) async {
     try {
       final id = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      const notificationDetails = NotificationDetails(
+      final notificationDetails = NotificationDetails(
         android: AndroidNotificationDetails(
-          "texbazar-60510",
-          "texbazarpushnotificationappchannel",
+          channel.id,
+          channel.name,
+          channelDescription: channel.description,
           importance: Importance.max,
           priority: Priority.high,
           color: Colors.deepOrange,
           chronometerCountDown: true,
+          sound: RawResourceAndroidNotificationSound('notification'),
+          ongoing: true,
         ),
-        iOS: DarwinNotificationDetails(
-          presentAlert: true,
-          presentBadge: true,
-          presentSound: true,
-        ),
+        iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true, sound: 'notification.wav'),
       );
       await _notificationsPlugin.show(
         id,

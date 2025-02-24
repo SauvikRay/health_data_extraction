@@ -108,6 +108,8 @@ void onStart(ServiceInstance service) async {
   });
 
   // bring to foreground
+
+  //Time Duration is a HARD CODE , We need it from server side and api is needed.
   Timer.periodic(const Duration(minutes: 2), (timer) async {
     if (service is AndroidServiceInstance) {
       if (await service.isForegroundService()) {
@@ -124,8 +126,8 @@ void onStart(ServiceInstance service) async {
           const NotificationDetails(
               android: AndroidNotificationDetails(
                 'my_foreground',
-                'MY FOREGROUND SERVICE',
-                icon: 'ic_bg_service_small',
+                'MY FOREGROUND HEALTH SERVICE',
+                icon: "@mipmap/ic_launcher",
                 ongoing: true,
               ),
               iOS: DarwinNotificationDetails()),
@@ -133,7 +135,7 @@ void onStart(ServiceInstance service) async {
 
         // if you don't using custom notification, uncomment this
         service.setForegroundNotificationInfo(
-          title: "My App Service",
+          title: "My Health Service",
           content: totalData,
         );
       }
