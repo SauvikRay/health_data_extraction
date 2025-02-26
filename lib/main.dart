@@ -8,6 +8,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
+import 'package:get/get.dart';
 import 'package:health/health.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -48,90 +49,9 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  String text = "Stop Service";
-  String systolic = '';
-  String diastolic = '';
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navigatorKey,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Service App'),
-        ),
-        body: Center(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              StreamBuilder<Map<String, dynamic>?>(
-                stream: FlutterBackgroundService().on('update'),
-                builder: (context, snapshot) {
-                  if (!snapshot.hasData) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  }
-
-                  final data = snapshot.data!;
-                  String? device = data["device"];
-                  DateTime? date = DateTime.tryParse(data["current_date"]);
-                  return Column(
-                    children: [
-                      Text(device ?? 'Unknown'),
-                      Text(date.toString()),
-                    ],
-                  );
-                },
-              ),
-              ElevatedButton(
-                child: const Text("Foreground Mode"),
-                onPressed: () => FlutterBackgroundService().invoke("setAsForeground"),
-              ),
-              ElevatedButton(
-                child: const Text("Background Mode"),
-                onPressed: () => FlutterBackgroundService().invoke("setAsBackground"),
-              ),
-              ElevatedButton(
-                child: Text(text),
-                onPressed: () async {
-                  final service = FlutterBackgroundService();
-                  var isRunning = await service.isRunning();
-                  isRunning ? service.invoke("stopService") : service.startService();
-
-                  setState(() {
-                    text = isRunning ? 'Start Service' : 'Stop Service';
-                  });
-                },
-              ),
-              ElevatedButton(
-                  child: const Text("Check Blod Pressure"),
-                  onPressed: () async {
-                    await HealthDataService.fetchBloodPressureData().then(
-                      (List<HealthDataPoint> healthData) {
-                        for (var item in healthData) {
-                          if (item.type == HealthDataType.BLOOD_PRESSURE_SYSTOLIC) {
-                            systolic = (item.value as NumericHealthValue).numericValue.toString();
-                          }
-                          if (item.type == HealthDataType.BLOOD_PRESSURE_DIASTOLIC) {
-                            diastolic = (item.value as NumericHealthValue).numericValue.toString();
-                          }
-                        }
-                        setState(() {});
-                      },
-                    );
-                  }),
-              Expanded(
-                child: Column(
-                  children: [
-                    Text('Blood Pressure Systolic : $systolic, Diastolic :$diastolic '),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
+    return GetMaterialApp(navigatorKey: navigatorKey, home: LogView());
   }
 }
 
@@ -143,41 +63,125 @@ class LogView extends StatefulWidget {
 }
 
 class _LogViewState extends State<LogView> {
-  late final Timer timer;
   List<String> logs = [];
 
   @override
   void initState() {
     super.initState();
-    timer = Timer.periodic(const Duration(seconds: 1), (timer) async {
-      final SharedPreferences sp = await SharedPreferences.getInstance();
-      await sp.reload();
-      logs = sp.getStringList('log') ?? [];
-      log("logdd $logs");
-      if (mounted) {
-        setState(() {});
-      }
-    });
   }
 
   @override
   void dispose() {
-    timer.cancel();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: logs.length,
-      itemBuilder: (context, index) {
-        final logdd = logs.elementAt(index);
+    return Scaffold(
+      body: Center(
+        child: Column(
+          children: [
+            ElevatedButton(
+              child: Text('Go to next page'),
+              onPressed: () {
+                Get.offAll(() => BackgroundServicePage());
+              },
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
 
-        return Text(
-          logdd,
-          style: TextStyle(color: Colors.black),
-        );
-      },
+class BackgroundServicePage extends StatefulWidget {
+  const BackgroundServicePage({super.key});
+
+  @override
+  State<BackgroundServicePage> createState() => _BackgroundServicePageState();
+}
+
+class _BackgroundServicePageState extends State<BackgroundServicePage> {
+  String text = "Stop Service";
+  String systolic = '';
+  String diastolic = '';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Service App'),
+      ),
+      body: Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            StreamBuilder<Map<String, dynamic>?>(
+              stream: FlutterBackgroundService().on('update'),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }
+
+                final data = snapshot.data!;
+                String? device = data["device"];
+                DateTime? date = DateTime.tryParse(data["current_date"]);
+                return Column(
+                  children: [
+                    Text(device ?? 'Unknown'),
+                    Text(date.toString()),
+                  ],
+                );
+              },
+            ),
+            ElevatedButton(
+              child: const Text("Foreground Mode"),
+              onPressed: () => FlutterBackgroundService().invoke("setAsForeground"),
+            ),
+            ElevatedButton(
+              child: const Text("Background Mode"),
+              onPressed: () => FlutterBackgroundService().invoke("setAsBackground"),
+            ),
+            ElevatedButton(
+              child: Text(text),
+              onPressed: () async {
+                final service = FlutterBackgroundService();
+                var isRunning = await service.isRunning();
+                isRunning ? service.invoke("stopService") : service.startService();
+
+                setState(() {
+                  text = isRunning ? 'Start Service' : 'Stop Service';
+                });
+              },
+            ),
+            ElevatedButton(
+                child: const Text("Check Blod Pressure"),
+                onPressed: () async {
+                  await HealthDataService.fetchBloodPressureData().then(
+                    (List<HealthDataPoint> healthData) {
+                      for (var item in healthData) {
+                        if (item.type == HealthDataType.BLOOD_PRESSURE_SYSTOLIC) {
+                          systolic = (item.value as NumericHealthValue).numericValue.toString();
+                        }
+                        if (item.type == HealthDataType.BLOOD_PRESSURE_DIASTOLIC) {
+                          diastolic = (item.value as NumericHealthValue).numericValue.toString();
+                        }
+                      }
+                      setState(() {});
+                    },
+                  );
+                }),
+            Expanded(
+              child: Column(
+                children: [
+                  Text('Blood Pressure Systolic : $systolic, Diastolic :$diastolic '),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

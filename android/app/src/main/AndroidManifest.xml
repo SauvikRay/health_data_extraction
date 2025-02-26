@@ -125,7 +125,7 @@
         </activity-alias>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="high_important_push_channel" />
+            android:value="kambaii_notification_channel" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_icon"
             android:resource="@mipmap/ic_launcher" />

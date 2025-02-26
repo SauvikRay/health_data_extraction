@@ -85,7 +85,7 @@ getGlucoseHeartRateTemperatureData() async {
 }
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
-  'high_important_push_channel', // id
+  'kambaii_notification_channel', // id
   'High Importance Notifications', // title
   description: 'This channel is used for important notifications.', // description,
   importance: Importance.max,
@@ -158,9 +158,13 @@ class LocalNotificationService {
           color: Colors.deepOrange,
           chronometerCountDown: true,
           sound: RawResourceAndroidNotificationSound('notification'),
-          ongoing: true,
         ),
-        iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true, sound: 'notification.wav'),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+          sound: 'notification.wav',
+        ),
       );
       await _notificationsPlugin.show(
         id,

@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "883165791671",
+    "firebase_url": "https://kambaiiwellnessapp-default-rtdb.firebaseio.com",
     "project_id": "kambaiiwellnessapp",
     "storage_bucket": "kambaiiwellnessapp.firebasestorage.app"
   },
@@ -19,6 +20,14 @@
           "android_info": {
             "package_name": "com.kambaii.kambaiihealth",
             "certificate_hash": "77d83f1616b68670068b0146e431527a6f3d020c"
+          }
+        },
+        {
+          "client_id": "883165791671-kju6n62tpmrtv8v5pkq13s2mq1kamk02.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.kambaii.kambaiihealth",
+            "certificate_hash": "58d7383efd2819bb115d3961f3d7e7101523a4fe"
           }
         },
         {
@@ -45,6 +54,13 @@
             {
               "client_id": "883165791671-eele67q4lujiuhpcha48hlrl1tsigba4.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "883165791671-8i7u3sg62vff1mjej0lau9ffb3ckj63a.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.kambaii.kambaiihealth"
+              }
             }
           ]
         }
